@@ -2,7 +2,7 @@
 ---- Title: MathQuiz
 -- Name: Maria T
 -- Course: ICS2O/3C
--- This program..
+-- This program asks the user a series of math questions.
 --
 ----------------------------------------------------------------------------------------------
 
@@ -41,13 +41,15 @@ local clockText
 local countDownTimer
 
 local lives = 4
-local Gumdrop1
-local Gumdrop2
-local Gumdrop3 
-local Gumdrop4
+local gumDrop1
+local gumDrop2
+local gumDrop3 
+local gumDrop4
 local gameOver
 
---*** ADD LOCAL VARIABLE FOR: INCORRECT OBJECT, POINTS OBJECT, POINTS
+local correctSound = audio.loadStream( "Sound/correctSound.mp3" )
+local incorrectSound = audio.loadStream( "Sound/incorrectSound.mp3")
+local gameOverSound = audio.loadStream( "Sound/gameOver.mp3")
 
 ---------------------------------------------------------------------------
 -- LOCAL FUNCTIONS
@@ -67,41 +69,40 @@ local function UpdateTime()
 		lives = lives - 1
 
 		-- *** IF THERE ARE NO LIVES LEFT, PLAY A LOSE SOUND, SHOW A YOU LOSE IMAGE
-		-- AND  CANCEL THE TIMER REMOVE THE THIRD Gumdrop BY MAKING IT INVISIBLE
+		-- AND  CANCEL THE TIMER REMOVE THE THIRD gumDrop BY MAKING IT INVISIBLE
 		
 		if (lives == 4) then 
-			Gumdrop4.isVisible = true
-			Gumdrop3.isVisible = true
-			Gumdrop2.isVisible = true
-			Gumdrop1.isVisible = true
+			gumDrop4.isVisible = true
+			gumDrop3.isVisible = true
+			gumDrop2.isVisible = true
+			gumDrop1.isVisible = true
 
 		elseif (lives == 3) then
-			Gumdrop4.isVisible = false
-			Gumdrop3.isVisible = true
-			Gumdrop2.isVisible = true
-			Gumdrop1.isVisible = true
+			gumDrop4.isVisible = false
+			gumDrop3.isVisible = true
+			gumDrop2.isVisible = true
+			gumDrop1.isVisible = true
 
 		elseif (lives == 2) then
-			Gumdrop4.isVisible = false
-			Gumdrop3.isVisible = false
-			Gumdrop2.isVisible = true
-			Gumdrop1.isVisible = true
+			gumDrop4.isVisible = false
+			gumDrop3.isVisible = false
+			gumDrop2.isVisible = true
+			gumDrop1.isVisible = true
 
 		elseif (lives == 1) then
-			Gumdrop4.isVisible = false
-			Gumdrop3.isVisible = false
-			Gumdrop2.isVisible = false
-			Gumdrop1.isVisible = true
+			gumDrop4.isVisible = false
+			gumDrop3.isVisible = false
+			gumDrop2.isVisible = false
+			gumDrop1.isVisible = true
 
 		elseif (lives == 0) then
-			Gumdrop4.isVisible = false
-			Gumdrop3.isVisible = false
-			Gumdrop2.isVisible = false
-			Gumdrop1.isVisible = false
+			gumDrop4.isVisible = false
+			gumDrop3.isVisible = false
+			gumDrop2.isVisible = false
+			gumDrop1.isVisible = false
 			numericField.isVisible = false
 			gameOver.isVisible = true
-
-
+			gameOverChannel = audio.play(gameOver, {channel = 2})
 		end
 
 		--*** CALL THE FUNCTION TO ASK A NEW QUESTION
@@ -179,7 +180,7 @@ local function Points()
 end
 
 local function NumericFieldListener( event )
-	
+
 	-- User begins editing "numericField"
 	if ( event.phase == "began" ) then
 
@@ -191,13 +192,17 @@ local function NumericFieldListener( event )
 		-- when the answer is submitted (enter key is pressed) set user input to user's answer
 		userAnswer = tonumber(event.target.text)
 
-		-- if the user answer and the correct answer are the same:
+		-- if the user answer and the correct answer are the same 
 		if (userAnswer == correctAnswer) then
 			correctObject.isVisible = true
-			-- play a sound when the user gets it corrct
-		--	correctSoundChannel = audio.play(correctSound, {channel = 1})
+
+			-- correct user sound
+			correctSoundChannel = audio.play(correctSound, {channel = 1})
+
 			-- when the user gets it correct add one point to the code and display it in text
 			points = points + 1
+
+			-- display points text object
 			pointsObject.text = "Points : " .. points
 			-- clear text field
 			event.target.text = ""
@@ -208,8 +213,9 @@ local function NumericFieldListener( event )
 		 	incorrectObject.isVisible = true 
 			-- clear text field
 			event.target.text = ""
-			-- play a sound when the user gets it incorrct
-		--	incorrectSoundChannel = audio.play(incorrectSound, {channel = 2})
+			-- incorrect user sound
+			secondsLeft = totalSeconds
+			incorrectSoundChannel = audio.play(incorrectSound, {channel = 2})
 			lives = lives - 1
 		 	-- call the HideInCorrect function after 1 second
 			timer.performWithDelay(1000, Hideincorrect)
@@ -251,25 +257,25 @@ pointsObject.isVisible = true
 numericField = native.newTextField( display.contentWidth/1.5, display.contentHeight/2, 190, 120 )
 numericField.inputType = "number"
 ------------------------------------------------------------
---Gumdrop OBJECTS
+--gumDrop OBJECTS
 -- Create the lives to display on the screen 
-Gumdrop1 = display.newImageRect("Images/Gumdrop.png", 100, 100)
-Gumdrop1.x = display.contentWidth * 7 / 8
-Gumdrop1.y = display.contentHeight * 1 / 7 
+gumDrop1 = display.newImageRect("Images/Gumdrop.png", 100, 100)
+gumDrop1.x = display.contentWidth * 7 / 8
+gumDrop1.y = display.contentHeight * 1 / 7 
 
-Gumdrop2 = display.newImageRect("Images/Gumdrop.png", 100, 100)
-Gumdrop2.x = display.contentWidth * 6 / 8
-Gumdrop2.y = display.contentHeight * 1 / 7 
-
-
-Gumdrop3 = display.newImageRect("Images/Gumdrop.png", 100, 100)
-Gumdrop3.x = display.contentWidth * 5 / 8
-Gumdrop3.y = display.contentHeight * 1 / 7 
+gumDrop2 = display.newImageRect("Images/Gumdrop.png", 100, 100)
+gumDrop2.x = display.contentWidth * 6 / 8
+gumDrop2.y = display.contentHeight * 1 / 7 
 
 
-Gumdrop4 = display.newImageRect("Images/Gumdrop.png", 100, 100)
-Gumdrop4.x = display.contentWidth * 4 / 8
-Gumdrop4.y = display.contentHeight * 1 / 7 
+gumDrop3 = display.newImageRect("Images/Gumdrop.png", 100, 100)
+gumDrop3.x = display.contentWidth * 5 / 8
+gumDrop3.y = display.contentHeight * 1 / 7 
+
+
+gumDrop4 = display.newImageRect("Images/Gumdrop.png", 100, 100)
+gumDrop4.x = display.contentWidth * 4 / 8
+gumDrop4.y = display.contentHeight * 1 / 7 
 --Aditional Functions
 -- create the text object to hold the countdowm timer
 clockText = display.newText(secondsLeft, 520, 600, native.systemFontBold, 150)
